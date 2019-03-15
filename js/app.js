@@ -4,7 +4,8 @@ var hours = ['6am', '7am','8am','9am','10am','11am','12pm','1pm','2pm','3pm','4p
 //I'm unsure about this hourly totals piece
 //Other approach I considered: building the html without totals and then crawling the table columns and summing them
 //That seemed wasteful as I did have all the information in memory once already
-//but an array of 0s to add to just looks silly. Any feedback appreciated.
+//Con: an array 0s to add to just looks silly. Pro: otherwise I would have had to code special 'push' logic for the first time through the array. 
+//Any feedback appreciated.
 
 var hourlyTotals = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var grandTotal = 0;
@@ -75,7 +76,7 @@ function makeHeaderOrFooterRow(inData){
   //therefore the header is short one column
   //forcing a lastColumn if one is passed in
   if (lastCol) {
-    headerData = `${headerData}<td>${inData.lastRow}</td>`;
+    headerData = `${headerData}<td>${inData.lastCol}</td>`;
   }
 
   headerRow.innerHTML = headerData;
