@@ -28,7 +28,9 @@ var pike = {
   },
   renderOutput(){
     this.loadDailyData();
-    var hoursAndTotalsList = document.getElementById('hours-and-cookies');
+    var hoursAndTotalsHeader = document.getElementById('pike');
+    hoursAndTotalsHeader.textContent = this.locationName;
+    var hoursAndTotalsList = document.getElementById('pike-hours-and-cookies');
     for (var i = 0; i < hours.length; i++) {
       var liEl = document.createElement('li');
       liEl.textContent = `${hours[i]}: ${this.calculatedCookiesPerHour[i]}`;
@@ -70,7 +72,9 @@ var seaTac = {
   },
   renderOutput(){
     this.loadDailyData();
-    var hoursAndTotalsList = document.getElementById('hours-and-cookies');
+    var hoursAndTotalsHeader = document.getElementById('seaTac');
+    hoursAndTotalsHeader.textContent = this.locationName;
+    var hoursAndTotalsList = document.getElementById('seaTac-hours-and-cookies');
     for (var i = 0; i < hours.length; i++) {
       var liEl = document.createElement('li');
       liEl.textContent = `${hours[i]}: ${this.calculatedCookiesPerHour[i]}`;
@@ -112,7 +116,9 @@ var seattleCenter = {
   },
   renderOutput(){
     this.loadDailyData();
-    var hoursAndTotalsList = document.getElementById('hours-and-cookies');
+    var hoursAndTotalsHeader = document.getElementById('seattleCenter');
+    hoursAndTotalsHeader.textContent = this.locationName;
+    var hoursAndTotalsList = document.getElementById('seattleCenter-hours-and-cookies');
     for (var i = 0; i < hours.length; i++) {
       var liEl = document.createElement('li');
       liEl.textContent = `${hours[i]}: ${this.calculatedCookiesPerHour[i]}`;
@@ -154,7 +160,9 @@ var capitolHill = {
   },
   renderOutput(){
     this.loadDailyData();
-    var hoursAndTotalsList = document.getElementById('hours-and-cookies');
+    var hoursAndTotalsHeader = document.getElementById('capitolHill');
+    hoursAndTotalsHeader.textContent = this.locationName;
+    var hoursAndTotalsList = document.getElementById('capitolHill-hours-and-cookies');
     for (var i = 0; i < hours.length; i++) {
       var liEl = document.createElement('li');
       liEl.textContent = `${hours[i]}: ${this.calculatedCookiesPerHour[i]}`;
@@ -196,8 +204,9 @@ var alki = {
   },
   renderOutput(){
     this.loadDailyData();
-    
-    var hoursAndTotalsList = document.getElementById('hours-and-cookies');
+    var hoursAndTotalsHeader = document.getElementById('alki');
+    hoursAndTotalsHeader.textContent = this.locationName;
+    var hoursAndTotalsList = document.getElementById('alki-hours-and-cookies');
     for (var i = 0; i < hours.length; i++) {
       var liEl = document.createElement('li');
       liEl.textContent = `${hours[i]}: ${this.calculatedCookiesPerHour[i]}`;
