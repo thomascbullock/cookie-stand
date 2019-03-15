@@ -56,11 +56,11 @@ function makeHeaderOrFooterRow(inData){
 
 //Store Constructor
 
-function Store(storeInfo) {
-  this.locationName = storeInfo.locationName;
-  this.minCustomers = storeInfo.minCustomers;
-  this.maxCustomers = storeInfo.maxCustomers;
-  this.averageCookiesPerSale = storeInfo.averageCookiesPerSale;
+function Store(inStoreInfo) {
+  this.locationName = inStoreInfo.locationName;
+  this.minCustomers = inStoreInfo.minCustomers;
+  this.maxCustomers = inStoreInfo.maxCustomers;
+  this.averageCookiesPerSale = inStoreInfo.averageCookiesPerSale;
 }
 
 //Store functions
@@ -83,12 +83,16 @@ Store.prototype.makeTableRow = function(){
   //now loop through the hours and calculate cookies per hour
   for (var hoursCounter = 0; hoursCounter < hours.length; hoursCounter++) {
     var calculatedCookies = this.getCookiesPerHour(this.getCustomersPerHour());
-    hourlyTotals[hoursCounter] = hourlyTotals[hoursCounter] + calculatedCookies;
-    grandTotal = grandTotal + calculatedCookies;
+    //add the calculated cookie count as table data
     this.calculatedCookiesTableRow = `${this.calculatedCookiesTableRow}<td>${calculatedCookies}</td>`;
+    //also add the calculated cookie count to the hourly, daily by location and daily grand totals
+    hourlyTotals[hoursCounter] = hourlyTotals[hoursCounter] + calculatedCookies;
     calculatedDailyCookieTotal += calculatedCookies;
+    grandTotal = grandTotal + calculatedCookies;
   }
+  //add the daily location total to the end of the table row
   this.calculatedCookiesTableRow = `${this.calculatedCookiesTableRow}<td>${calculatedDailyCookieTotal}</td>`;
+  //return the table row
   return this.calculatedCookiesTableRow;
 };
 
