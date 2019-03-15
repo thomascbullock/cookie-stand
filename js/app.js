@@ -1,12 +1,6 @@
 //data
 var hours = ['6am', '7am','8am','9am','10am','11am','12pm','1pm','2pm','3pm','4pm','5pm','6pm','7pm','8pm'];
 
-//I'm unsure about this hourly totals piece
-//Other approach I considered: building the html without totals and then crawling the table columns and summing them
-//That seemed wasteful as I did have all the information in memory once already
-//Con: an array 0s to add to just looks silly. Pro: otherwise I would have had to code special 'push' logic for the first time through the array.
-//Any feedback appreciated.
-
 var hourlyTotals = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var grandTotal = 0;
 
@@ -26,6 +20,7 @@ function addTableRow(inRow){
 function makeHeaderOrFooterRow(inData){
   //headers and footers share a lot of code so making one function
   //for the sake of variable names both types are referred to as a header
+  //the actual the is passed in as var type
   var type = inData.type;
   var firstCol = inData.firstCol;
   var arr = inData.arr;
@@ -58,46 +53,50 @@ function makeHeaderOrFooterRow(inData){
 
   table.appendChild(headerRow);
 }
-//main Object
+
+//Store Constructor
 
 function Store(storeInfo) {
   this.locationName = storeInfo.locationName;
   this.minCustomers = storeInfo.minCustomers;
   this.maxCustomers = storeInfo.maxCustomers;
   this.averageCookiesPerSale = storeInfo.averageCookiesPerSale;
-  this.getCookiesPerHour = function(inCustomers){
-    return Math.round(inCustomers * this.averageCookiesPerSale);
-  };
-  this.getCustomersPerHour = function(){
-    //using the getRandomIntInclusive pattern from
-    //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
-    var min = Math.ceil(this.minCustomers);
-    var max = Math.floor(this.maxCustomers);
-    return Math.floor(Math.random() * (max-min + 1)) + min;
-  };
-
-  this.makeTableRow = function(){
-    var calculatedDailyCookieTotal = 0;
-    //start table row with location name
-    this.calculatedCookiesTableRow = `<td>${this.locationName}</td>`;
-    //now loop through the hours and calculate cookies per hour
-    for (var hoursCounter = 0; hoursCounter < hours.length; hoursCounter++) {
-      var calculatedCookies = this.getCookiesPerHour(this.getCustomersPerHour());
-      hourlyTotals[hoursCounter] = hourlyTotals[hoursCounter] + calculatedCookies;
-      grandTotal = grandTotal + calculatedCookies;
-      this.calculatedCookiesTableRow = `${this.calculatedCookiesTableRow}<td>${calculatedCookies}</td>`;
-      calculatedDailyCookieTotal += calculatedCookies;
-    }
-    this.calculatedCookiesTableRow = `${this.calculatedCookiesTableRow}<td>${calculatedDailyCookieTotal}</td>`;
-    return this.calculatedCookiesTableRow;
-  },
-
-  this.renderOutput = function(){
-    addTableRow(this.makeTableRow());
-  };
 }
 
-//begin page logic here
+//Store functions
+
+Store.prototype.getCookiesPerHour = function(inCustomers){
+  return Math.round(inCustomers * this.averageCookiesPerSale);
+};
+Store.prototype.getCustomersPerHour = function(){
+  //using the getRandomIntInclusive pattern from
+  //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+  var min = Math.ceil(this.minCustomers);
+  var max = Math.floor(this.maxCustomers);
+  return Math.floor(Math.random() * (max-min + 1)) + min;
+};
+
+Store.prototype.makeTableRow = function(){
+  var calculatedDailyCookieTotal = 0;
+  //start table row with location name
+  this.calculatedCookiesTableRow = `<td>${this.locationName}</td>`;
+  //now loop through the hours and calculate cookies per hour
+  for (var hoursCounter = 0; hoursCounter < hours.length; hoursCounter++) {
+    var calculatedCookies = this.getCookiesPerHour(this.getCustomersPerHour());
+    hourlyTotals[hoursCounter] = hourlyTotals[hoursCounter] + calculatedCookies;
+    grandTotal = grandTotal + calculatedCookies;
+    this.calculatedCookiesTableRow = `${this.calculatedCookiesTableRow}<td>${calculatedCookies}</td>`;
+    calculatedDailyCookieTotal += calculatedCookies;
+  }
+  this.calculatedCookiesTableRow = `${this.calculatedCookiesTableRow}<td>${calculatedDailyCookieTotal}</td>`;
+  return this.calculatedCookiesTableRow;
+};
+
+Store.prototype.renderOutput = function(){
+  addTableRow(this.makeTableRow());
+};
+
+//form handler
 
 function formData(event){
   event.preventDefault();
@@ -119,6 +118,8 @@ function formData(event){
   makeHeaderOrFooterRow({type: 'footer', firstCol: 'Totals', arr: hourlyTotals});
   form.reset();
 }
+
+//begin page logic here
 
 form.addEventListener('submit',formData);
 
