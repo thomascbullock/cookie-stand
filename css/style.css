@@ -1,0 +1,18 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+h1 {
+    margin: 20px;
+    font-size: x-large;
+    text-align: center;
+}
+
+thead {
+    background: #888;
+  }
+  
+  td {
+    padding: 20px;
+    border: solid 1px black;
+  }

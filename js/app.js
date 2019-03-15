@@ -1,49 +1,13 @@
+//data
 var hours = ['6am', '7am','8am','9am','10am','11am','12pm','1pm','2pm','3pm','4pm','5pm','6pm','7pm','8pm'];
 
-function Store(storeInfo) {
-  this.locationName = storeInfo.locationName;
-  this.displayName = storeInfo.displayName;
-  this.minCustomers = storeInfo.minCustomers;
-  this.maxCustomers = storeInfo.maxCustomers;
-  this.averageCookiesPerSale = storeInfo.averageCookiesPerSale;
-  this.calculatedCookiesPerHour = [];
-  this.calculatedDailyCookieTotal = 0;
-  this.getCookiesPerHour = function(inCustomers){
-    return Math.round(inCustomers * this.averageCookiesPerSale);
-  };
-  this.getCustomersPerHour = function(){
-    //using the getRandomIntInclusive pattern from
-    //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
-    var min = Math.ceil(this.minCustomers);
-    var max = Math.floor(this.maxCustomers);
-    return Math.floor(Math.random() * (max-min + 1)) + min;
-  };
+//I'm unsure about this hourly totals piece
+//Other approach I considered: building the html without totals and then crawling the table columns and summing them
+//That seemed wasteful as I did have all the information in memory once already
+//but an array of 0s to add to just looks silly. Any feedback appreciated.
 
-  this.loadDailyData = function(){
-    this.calculatedDailyCookieTotal = 0;
-    for (var i = 0; i < hours.length; i++) {
-      var calculatedCookies = this.getCookiesPerHour(this.getCustomersPerHour());
-      //no real reason this has to be split into 2 lines except it looked unwieldy as one
-      this.calculatedCookiesPerHour.push(calculatedCookies);
-      this.calculatedDailyCookieTotal += calculatedCookies;
-    }
-  },
-  this.renderOutput = function(){
-    this.loadDailyData();
-    var hoursAndTotalsHeader = document.getElementById(this.locationName);
-    hoursAndTotalsHeader.textContent = this.displayName;
-    var hoursAndTotalsList = document.getElementById(`${this.locationName}-hours-and-cookies`);
-    for (var i = 0; i < hours.length; i++) {
-      var liEl = document.createElement('li');
-      liEl.textContent = `${hours[i]}: ${this.calculatedCookiesPerHour[i]}`;
-      hoursAndTotalsList.appendChild(liEl);
-    }
-    //add the total element
-    var totalLiEl = document.createElement('li');
-    totalLiEl.textContent = `Total: ${this.calculatedDailyCookieTotal}`;
-    hoursAndTotalsList.appendChild(totalLiEl);
-  };
-}
+var hourlyTotals = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var grandTotal = 0;
 
 var pikeInfo = {
   locationName: 'pike',
@@ -84,6 +48,86 @@ var alkiInfo = {
   maxCustomers: 16,
   averageCookiesPerSale: 4.6};
 
+
+
+var tableBody = document.getElementById('sales-table-body');
+
+//utility functions
+
+function addTableRow(inRow){
+  var newRow = document.createElement('tr');
+  newRow.innerHTML = inRow;
+  tableBody.appendChild(newRow);
+}
+
+function makeHeaderOrFooterRow(inData){
+  var firstCol = inData.firstCol;
+  var arr = inData.arr;
+  var lastCol = inData.lastCol;
+  var table = document.getElementById('sales-table');
+  //start the header with an empty cell
+  var headerRow = document.createElement('thead');
+  var headerData = `<td>${firstCol}</td>`;
+  for (var headerCounter = 0; headerCounter < arr.length; headerCounter++) {
+    headerData = `${headerData}<td>${arr[headerCounter]}</td>`;
+  }
+  //the totals get appended to the array at the end
+  //therefore the header is short one column
+  //forcing a lastColumn if one is passed in
+  if (lastCol) {
+    headerData = `${headerData}<td>${inData.lastRow}</td>`;
+  }
+
+  headerRow.innerHTML = headerData;
+
+  table.appendChild(headerRow);
+}
+//main Object
+
+function Store(storeInfo) {
+  this.locationName = storeInfo.locationName;
+  this.displayName = storeInfo.displayName;
+  this.minCustomers = storeInfo.minCustomers;
+  this.maxCustomers = storeInfo.maxCustomers;
+  this.averageCookiesPerSale = storeInfo.averageCookiesPerSale;
+  this.getCookiesPerHour = function(inCustomers){
+    return Math.round(inCustomers * this.averageCookiesPerSale);
+  };
+  this.getCustomersPerHour = function(){
+    //using the getRandomIntInclusive pattern from
+    //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+    var min = Math.ceil(this.minCustomers);
+    var max = Math.floor(this.maxCustomers);
+    return Math.floor(Math.random() * (max-min + 1)) + min;
+  };
+
+  this.makeTableRow = function(){
+    var calculatedDailyCookieTotal = 0;
+    //start table row with display name
+    this.calculatedCookiesTableRow = `<td>${this.displayName}</td>`;
+    //now loop through the hours and calculate cookies per hour
+    for (var hoursCounter = 0; hoursCounter < hours.length; hoursCounter++) {
+      var calculatedCookies = this.getCookiesPerHour(this.getCustomersPerHour());
+      hourlyTotals[hoursCounter] = hourlyTotals[hoursCounter] + calculatedCookies;
+      grandTotal = grandTotal + calculatedCookies;
+      this.calculatedCookiesTableRow = `${this.calculatedCookiesTableRow}<td>${calculatedCookies}</td>`;
+      calculatedDailyCookieTotal += calculatedCookies;
+    }
+    this.calculatedCookiesTableRow = `${this.calculatedCookiesTableRow}<td>${calculatedDailyCookieTotal}</td>`;
+    return this.calculatedCookiesTableRow;
+  },
+
+  this.renderOutput = function(){
+    addTableRow(this.makeTableRow());
+  };
+}
+
+//begin page logic here
+
+//make the header
+makeHeaderOrFooterRow({firstCol: '', lastCol: 'Daily Location Total', arr: hours});
+
+//create and add store rows
 var pike = new Store(pikeInfo);
 pike.renderOutput();
 var seaTac = new Store(seaTacInfo);
@@ -94,3 +138,11 @@ var capitolHill = new Store(capitolHillInfo);
 capitolHill.renderOutput();
 var alki = new Store(alkiInfo);
 alki.renderOutput();
+
+//Add grandTotal to hourly totals array
+hourlyTotals.push(grandTotal);
+
+//make the footer
+makeHeaderOrFooterRow({firstCol: 'Totals', arr: hourlyTotals});
+
+//profit
