@@ -1,8 +1,44 @@
 //data
 var hours = ['6am', '7am','8am','9am','10am','11am','12pm','1pm','2pm','3pm','4pm','5pm','6pm','7pm','8pm'];
-
-var hourlyTotals = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var hourlyTotals = [];
 var grandTotal = 0;
+
+//initial stores
+var pikeInfo = {
+  locationName: '1st and Pike',
+  minCustomers: 23,
+  maxCustomers: 65,
+  averageCookiesPerSale: 6.3
+};
+
+var seaTacInfo = {
+  locationName: 'SeaTac Airport',
+  minCustomers: 3,
+  maxCustomers: 23,
+  averageCookiesPerSale: 1.2
+};
+
+var seattleCenterInfo = {
+  locationName: 'Seattle Center',
+  minCustomers: 11,
+  maxCustomers: 38,
+  averageCookiesPerSale: 3.7
+};
+
+var capitolHillInfo = {
+  locationName: 'Capitol Hill',
+  minCustomers: 20,
+  maxCustomers: 38,
+  averageCookiesPerSale: 2.3
+};
+
+var alkiInfo = {
+  locationName: 'Alki',
+  minCustomers: 2,
+  maxCustomers: 16,
+  averageCookiesPerSale: 4.6};
+
+
 
 var form = document.getElementById('sales-form');
 
@@ -86,7 +122,11 @@ Store.prototype.makeTableRow = function(){
     //add the calculated cookie count as table data
     this.calculatedCookiesTableRow = `${this.calculatedCookiesTableRow}<td>${calculatedCookies}</td>`;
     //also add the calculated cookie count to the hourly, daily by location and daily grand totals
-    hourlyTotals[hoursCounter] = hourlyTotals[hoursCounter] + calculatedCookies;
+    if (hourlyTotals[hoursCounter]){
+      hourlyTotals[hoursCounter] += calculatedCookies;
+    } else {
+      hourlyTotals.push(calculatedCookies);
+    }
     calculatedDailyCookieTotal += calculatedCookies;
     grandTotal = grandTotal + calculatedCookies;
   }
@@ -100,30 +140,48 @@ Store.prototype.renderOutput = function(){
   addTableRow(this.makeTableRow());
 };
 
+//adding a process function because we have some stores to be loaded with the page, and some from the form
+//and both should use the same code
+
+function process(inStoreInfo){
+  makeHeaderOrFooterRow({type: 'header', firstCol: '', lastCol: 'Daily Location Total', arr: hours});
+  var store = new Store(inStoreInfo);
+  store.renderOutput();
+  //remove previous grand total if one exists (it won't the first time)
+  if (hourlyTotals.length > hours.length) {
+    hourlyTotals.pop();
+  }
+  //add updated grand total
+  hourlyTotals.push(grandTotal);
+  makeHeaderOrFooterRow({type: 'footer', firstCol: 'Totals', arr: hourlyTotals});
+}
+
 //form handler
 
-function formData(event){
+function formHandler(event){
   event.preventDefault();
-  makeHeaderOrFooterRow({type: 'header', firstCol: '', lastCol: 'Daily Location Total', arr: hours});
+
   var storeInfo = {
     locationName: event.target.location_name.value,
     minCustomers: event.target.min_cust.value,
     maxCustomers: event.target.max_cust.value,
     averageCookiesPerSale: event.target.average_cookies_per_sale.value
   };
-  var store = new Store(storeInfo);
-  store.renderOutput();
-  //remove previous grand total if one exists (it won't the first time)
-  if (hourlyTotals.length > hours.length) {
-    hourlyTotals.pop();
-  }
-  //add grand total
-  hourlyTotals.push(grandTotal);
-  makeHeaderOrFooterRow({type: 'footer', firstCol: 'Totals', arr: hourlyTotals});
+
+  process(storeInfo);
+
   form.reset();
 }
 
 //begin page logic here
 
-form.addEventListener('submit',formData);
+//load initial stores
+process(pikeInfo);
+process(seattleCenterInfo);
+process(seaTacInfo);
+process(capitolHillInfo);
+process(alkiInfo);
+
+//listen for more stores
+form.addEventListener('submit',formHandler);
 
