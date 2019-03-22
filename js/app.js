@@ -1,6 +1,10 @@
 //data
 var hours = ['6am', '7am','8am','9am','10am','11am','12pm','1pm','2pm','3pm','4pm','5pm','6pm','7pm','8pm'];
 
+// tom, can you update the hourly totals to be less dry?
+var somethingSilly = 'you can delete later - example';
+
+
 var hourlyTotals = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var grandTotal = 0;
 
