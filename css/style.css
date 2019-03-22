@@ -1,11 +1,45 @@
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: helvetica;
+    font-size: 26px;
+}
+h1 {
+    font-weight: bold;
+    font-size: 32pt;
+    padding: 20px;
+    text-align: center;
+
+}
+form {
+    border: solid 1px black;
+    padding: 20px;
+    margin: auto;
+    width: 50%
+
 }
 
-h1 {
+fieldset {
+    padding: 10px;
+}
+
+input[type="text"] {
+    border: solid 1px black;
+    padding: 5px;
+    border-radius: 3px;
+    width: 50%;
+}
+
+button {
+    margin-left: 10px;
+    background: black;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-bottom: 50px;
+}
+
+table {
     margin: 20px;
-    font-size: x-large;
-    text-align: center;
 }
 
 thead {
