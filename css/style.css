@@ -1,10 +1,9 @@
 body {
-    font-family: helvetica;
-    font-size: 26px;
+  font-family: 'Nanum Gothic', sans-serif;
 }
 h1 {
     font-weight: bold;
-    font-size: 32pt;
+    font-size: 26pt;
     padding: 20px;
     text-align: center;
 
@@ -13,19 +12,18 @@ form {
     border: solid 1px black;
     padding: 20px;
     margin: auto;
-    width: 50%
-
+    width: 50%;
+    font-size: 18pt;
 }
 
 fieldset {
     padding: 10px;
 }
 
-input[type="text"] {
+input {
     border: solid 1px black;
     padding: 5px;
     border-radius: 3px;
-    width: 50%;
 }
 
 button {
@@ -35,18 +33,52 @@ button {
     border: none;
     border-radius: 3px;
     cursor: pointer;
-    margin-bottom: 50px;
+    padding: 10px;
+    margin-top: 15px;
+    margin-bottom: 15px;
 }
 
 table {
-    margin: 20px;
+    margin-top: 20px;
+    margin: auto;
+    width: 50%;
+    font-size: 12pt;
+    padding: 20px;
+}
+
+#stores-table tbody tr {
+    text-align: right;
+    height: 200px;
+    width: 700px;
+    text-shadow: 1px 1px #888;
+}
+
+#stores-table thead {
+  text-align: center;
+}
+
+#stores-table #merch {
+    background-image: url("../img/shirt.jpg");
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+#stores-table #admin {
+    background-image: url("../img/chinook.jpg");
+    background-repeat: no-repeat;
+    background-size: contain;
 }
 
 thead {
     background: #888;
+    font-weight: bold;
   }
   
   td {
     padding: 20px;
     border: solid 1px black;
   }
+
+tfoot {
+    background: #888;
+    font-weight: bold;
+}
