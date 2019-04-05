@@ -10,49 +10,67 @@ var pikeInfo = {
   locationName: '1st and Pike',
   minCustomers: 23,
   maxCustomers: 65,
-  averageCookiesPerSale: 6.3
+  averageCookiesPerSale: 6.3,
+  hours: '9am to 3pm',
+  img: 'cutter.jpg'
+
 };
 
 var seaTacInfo = {
   locationName: 'SeaTac Airport',
   minCustomers: 3,
   maxCustomers: 23,
-  averageCookiesPerSale: 1.2
+  averageCookiesPerSale: 1.2,
+  hours: '5am to 10pm',
+  img: 'family.jpg'
 };
 
 var seattleCenterInfo = {
   locationName: 'Seattle Center',
   minCustomers: 11,
   maxCustomers: 38,
-  averageCookiesPerSale: 3.7
+  averageCookiesPerSale: 3.7,
+  hours: '8am to 3pm',
+  img: 'fish.jpg'
 };
 
 var capitolHillInfo = {
   locationName: 'Capitol Hill',
   minCustomers: 20,
   maxCustomers: 38,
-  averageCookiesPerSale: 2.3
+  averageCookiesPerSale: 2.3,
+  hours: '4pm to 2am',
+  img: 'frosted-cookie.jpg'
 };
 
 var alkiInfo = {
   locationName: 'Alki',
   minCustomers: 2,
   maxCustomers: 16,
-  averageCookiesPerSale: 4.6};
+  averageCookiesPerSale: 4.6,
+  hours: '6am to 12pm',
+  img: 'salmon.png'};
 
 
 
 var form = document.getElementById('sales-form');
 
-var tableBody = document.getElementById('sales-table-body');
-var table = document.getElementById('sales-table');
+var salesTableBody = document.getElementById('sales-table-body');
+var salesTable = document.getElementById('sales-table');
+var storesTable = document.getElementById('stores-table-body');
+var whichPage = document.getElementById('title').innerText;
 
 //utility functions
 
-function addTableRow(inRow){
+function addTableRow(inRowType, inRow){
   var newRow = document.createElement('tr');
   newRow.innerHTML = inRow;
-  tableBody.appendChild(newRow);
+  if (inRowType === 'sales') {
+    salesTableBody.appendChild(newRow);
+  }
+  if (inRowType === 'stores') {
+    storesTable.appendChild(newRow);
+  }
 }
 
 function makeHeaderOrFooterRow(inData){
@@ -68,11 +86,11 @@ function makeHeaderOrFooterRow(inData){
   switch(type) {
   case 'header':
     element = 'thead';
-    table.deleteTHead();
+    salesTable.deleteTHead();
     break;
   case 'footer':
     element = 'tfoot';
-    table.deleteTFoot();
+    salesTable.deleteTFoot();
     break;
   }
   //start the header with an empty cell
@@ -89,7 +107,7 @@ function makeHeaderOrFooterRow(inData){
 
   headerRow.innerHTML = headerData;
 
-  table.appendChild(headerRow);
+  salesTable.appendChild(headerRow);
 }
 
 //Store Constructor
@@ -99,6 +117,8 @@ function Store(inStoreInfo) {
   this.minCustomers = inStoreInfo.minCustomers;
   this.maxCustomers = inStoreInfo.maxCustomers;
   this.averageCookiesPerSale = inStoreInfo.averageCookiesPerSale;
+  this.hours = inStoreInfo.hours;
+  this.img = inStoreInfo.img;
 }
 
 //Store functions
@@ -114,7 +134,7 @@ Store.prototype.getCustomersPerHour = function(){
   return Math.floor(Math.random() * (max-min + 1)) + min;
 };
 
-Store.prototype.makeTableRow = function(){
+Store.prototype.makeSalesTableRow = function(){
   var calculatedDailyCookieTotal = 0;
   //start table row with location name
   this.calculatedCookiesTableRow = `<td>${this.locationName}</td>`;
@@ -138,26 +158,40 @@ Store.prototype.makeTableRow = function(){
   return this.calculatedCookiesTableRow;
 };
 
-Store.prototype.renderOutput = function(){
-  addTableRow(this.makeTableRow());
+Store.prototype.makeStoresTableRow = function(){
+  this.storeInfoTableRow = `<td style="background-image: url(./img/${this.img}); background-repeat: no-repeat; background-size: cover;">${this.locationName}<br/> Hours: ${this.hours}</td>`;
+  return this.storeInfoTableRow;
+};
+
+Store.prototype.renderSalesOutput = function(){
+  addTableRow('sales',this.makeSalesTableRow());
+};
+
+Store.prototype.renderStoreInfoOutput = function(){
+  addTableRow('stores',this.makeStoresTableRow());
 };
 
 //adding a process function because we have some stores to be loaded with the page, and some from the form
 //and both should use the same code
 
 function process(inStoreInfo){
-  makeHeaderOrFooterRow({type: 'header', firstCol: '', lastCol: 'Daily Location Total', arr: hours});
   var store = new Store(inStoreInfo);
-  store.renderOutput();
-  //remove previous grand total if one exists (it won't the first time)
-  if (hourlyTotals.length > hours.length) {
-    hourlyTotals.pop();
+  if (whichPage === 'Store Sales Calculator') {
+    makeHeaderOrFooterRow({type: 'header', firstCol: '', lastCol: 'Daily Location Total', arr: hours});
+    store.renderSalesOutput();
+    //remove previous grand total if one exists (it won't the first time)
+    if (hourlyTotals.length > hours.length) {
+      hourlyTotals.pop();
+    }
+    //add updated grand total
+    hourlyTotals.push(grandTotal);
+    makeHeaderOrFooterRow({type: 'footer', firstCol: 'Totals', arr: hourlyTotals});
   }
-  //add updated grand total
-  hourlyTotals.push(grandTotal);
-  makeHeaderOrFooterRow({type: 'footer', firstCol: 'Totals', arr: hourlyTotals});
-}
 
+  if (whichPage === 'Salmon Cookies, by Pat') {
+    store.renderStoreInfoOutput();
+  }
+}
 //form handler
 
 function formHandler(event){
@@ -176,8 +210,9 @@ function formHandler(event){
 }
 
 //begin page logic here
-
+console.log(whichPage);
 //load initial stores
+
 process(pikeInfo);
 process(seattleCenterInfo);
 process(seaTacInfo);
@@ -185,5 +220,6 @@ process(capitolHillInfo);
 process(alkiInfo);
 
 //listen for more stores
-form.addEventListener('submit',formHandler);
-
+if (whichPage === 'Store Sales Calculator') {
+  form.addEventListener('submit',formHandler);
+}
